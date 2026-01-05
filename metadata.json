@@ -1,5 +1,5 @@
 {
-  "name": "Copy of Neon Chronos",
+  "name": "Neon Chronos",
   "description": "A high-fidelity, cyberpunk-inspired digital and analog clock with customizable neon themes and matrix background effects.",
   "requestFramePermissions": [
     "geolocation"

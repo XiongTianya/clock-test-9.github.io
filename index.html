@@ -2,7 +2,8 @@
 <html lang="zh-CN">
   <head>
     <script>
-      // 1. URL 规范化重定向：确保路径以 / 结尾，防止相对路径解析错误
+      // 1. URL 规范化重定向
+      // 解决 GitHub Pages 子目录路径问题 (e.g. /repo -> /repo/)
       (function() {
         var path = window.location.pathname;
         if (!path.endsWith('/') && !path.includes('.')) {
@@ -16,15 +17,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Neon Chronos</title>
     
-    <!-- 2. 动态注入 Manifest：防止浏览器在重定向发生前请求导致 404 -->
+    <!-- 2. 动态注入 Manifest -->
     <script>
       (function() {
-        // 只有当路径看起来稳定（有结尾斜杠或指向具体文件）时才注入
         if (window.location.pathname.endsWith('/') || window.location.pathname.includes('.')) {
           var link = document.createElement('link');
           link.rel = 'manifest';
-          link.href = './manifest.json'; // 明确使用相对路径
+          link.href = './manifest.json';
           document.head.appendChild(link);
+          
+          // 3. 注册 Service Worker (PWA 安装的硬性要求)
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              // 使用 ./ 相对路径，兼容 GitHub Pages 子目录
+              navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                  console.log('SW registered: ', registration.scope);
+                })
+                .catch(registrationError => {
+                  console.log('SW registration failed: ', registrationError);
+                });
+            });
+          }
         }
       })();
     </script>
@@ -38,7 +52,7 @@
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233497.png">
 
-    <!-- Use specific version to ensure stability -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,28 +60,18 @@
     <style>
       body {
         background-color: #050505;
-        overflow: hidden; /* Prevent scrollbars for full immersion */
-        overscroll-behavior: none; /* Prevent bounce effect on iOS */
+        overflow: hidden;
+        overscroll-behavior: none;
       }
       .font-orbitron { font-family: 'Orbitron', sans-serif; }
       .font-mono-tech { font-family: 'Share Tech Mono', monospace; }
       .font-retro { font-family: 'VT323', monospace; }
       .font-minimal { font-family: 'Inter', sans-serif; }
       
-      /* Custom Scrollbar for controls */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #111;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #333;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #111; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
     <script>
       tailwind.config = {
