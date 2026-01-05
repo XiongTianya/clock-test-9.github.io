@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, X, Monitor, Type, Calendar, Clock, Activity, Download, Bell, Timer, Trash2, Plus, Play, Pause, RotateCcw, Cloud, Smartphone, MonitorDown } from 'lucide-react';
+import { Settings, X, Monitor, Type, Calendar, Clock, Activity, Download, Bell, Timer, Trash2, Plus, Play, Pause, RotateCcw, Cloud, Smartphone, MonitorDown, Check } from 'lucide-react';
 import { AppSettings, ClockMode, ThemeColor, ClockSkin, Alarm, TimerState } from '../types';
 
 interface SettingsPanelProps {
@@ -15,12 +15,15 @@ interface SettingsPanelProps {
   // Timer Props
   timer: TimerState;
   onTimerAction: (action: 'START' | 'PAUSE' | 'RESET' | 'SET_MODE', value?: any) => void;
+  // Install Prop
+  installPrompt: any;
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({ 
   isOpen, onClose, settings, onUpdate,
   alarms, onAddAlarm, onToggleAlarm, onDeleteAlarm,
-  timer, onTimerAction
+  timer, onTimerAction,
+  installPrompt
 }) => {
   const [activeTab, setActiveTab] = useState<'VISUAL' | 'ALARM' | 'TIMER' | 'INSTALL'>('VISUAL');
   const [newAlarmTime, setNewAlarmTime] = useState("08:00");
@@ -37,6 +40,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       document.documentElement.requestFullscreen();
     } else {
       if (document.exitFullscreen) document.exitFullscreen();
+    }
+  };
+
+  const handleInstallClick = () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted install');
+        }
+      });
     }
   };
 
@@ -320,33 +334,52 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           {/* --- INSTALL / APP TAB --- */}
           {activeTab === 'INSTALL' && (
             <div className="space-y-6 font-mono-tech">
+              
+              {/* Desktop Install Section */}
               <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-3 mb-2 text-neon-blue">
+                <div className="flex items-center gap-3 mb-4 text-neon-blue">
                   <MonitorDown className="w-6 h-6" />
-                  <h3 className="font-bold text-lg">DESKTOP INSTALL (EXE-LIKE)</h3>
+                  <h3 className="font-bold text-lg">DESKTOP INSTALL</h3>
                 </div>
-                <p className="text-zinc-400 text-sm mb-3">
-                  Install this as a standalone desktop application using Chrome or Edge.
-                </p>
-                <ol className="list-decimal list-inside text-zinc-500 text-sm space-y-1">
-                  <li>Look for the <span className="text-white border border-zinc-700 px-1 rounded">Install icon</span> in your browser address bar (right side).</li>
-                  <li>Click <b>"Install Neon Chronos"</b>.</li>
-                  <li>It will launch in its own window and can be pinned to your taskbar like an .exe!</li>
-                </ol>
+                
+                {installPrompt ? (
+                  <div className="space-y-3">
+                     <p className="text-zinc-400 text-sm">
+                       Ready to install. Click below to install Neon Chronos as a standalone desktop application.
+                     </p>
+                     <button 
+                      onClick={handleInstallClick}
+                      className="w-full py-3 bg-neon-blue text-black font-bold rounded hover:bg-white transition-colors flex items-center justify-center gap-2 animate-pulse"
+                     >
+                       <Download className="w-5 h-5" /> INSTALL APPLICATION
+                     </button>
+                  </div>
+                ) : (
+                  <>
+                     <p className="text-zinc-400 text-sm mb-3">
+                       Install as a standalone desktop app via your browser.
+                     </p>
+                     <div className="flex items-start gap-2 text-zinc-500 text-sm bg-zinc-900 p-2 rounded">
+                       <div className="shrink-0 mt-0.5"><Check className="w-4 h-4 text-green-500" /></div>
+                       <span>If the "Install" button doesn't appear above, check your browser address bar (right side) for an install icon.</span>
+                     </div>
+                  </>
+                )}
               </div>
 
+              {/* Mobile Install Section */}
               <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
                 <div className="flex items-center gap-3 mb-2 text-neon-green">
                   <Smartphone className="w-6 h-6" />
-                  <h3 className="font-bold text-lg">iPHONE INSTALL</h3>
+                  <h3 className="font-bold text-lg">iPHONE / ANDROID</h3>
                 </div>
                 <p className="text-zinc-400 text-sm mb-3">
-                  Add to your home screen for a full-screen app experience.
+                  Get the full App experience without an app store.
                 </p>
-                <ol className="list-decimal list-inside text-zinc-500 text-sm space-y-1">
-                  <li>Tap the <span className="text-white">Share Button</span> (Box with arrow up).</li>
-                  <li>Scroll down and tap <span className="text-white">"Add to Home Screen"</span>.</li>
-                  <li>Tap <b>Add</b>. Launch from your home screen!</li>
+                <ol className="list-decimal list-inside text-zinc-500 text-sm space-y-2">
+                  <li className="pl-1">Open <b>Safari</b> (iOS) or <b>Chrome</b> (Android).</li>
+                  <li className="pl-1">Tap the <b>Share</b> button (iOS) or <b>Menu</b> (Android).</li>
+                  <li className="pl-1">Select <span className="text-white">"Add to Home Screen"</span>.</li>
                 </ol>
               </div>
             </div>

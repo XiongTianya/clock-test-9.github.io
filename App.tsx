@@ -14,6 +14,24 @@ const App: React.FC = () => {
   const time = useCurrentTime();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeAlarmId, setActiveAlarmId] = useState<string | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  
+  // -- PWA INSTALL PROMPT LISTENER --
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setInstallPrompt(e);
+      console.log("Install Prompt Captured");
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
   
   // -- SETTINGS STATE --
   const [settings, setSettings] = useState<AppSettings>({
@@ -255,6 +273,7 @@ const App: React.FC = () => {
         onDeleteAlarm={handleDeleteAlarm}
         timer={timer}
         onTimerAction={handleTimerAction}
+        installPrompt={installPrompt}
       />
     </div>
   );

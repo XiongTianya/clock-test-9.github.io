@@ -2,15 +2,12 @@
 <html lang="zh-CN">
   <head>
     <script>
-      // 核心修复：强制添加末尾斜杠
-      // 解决 GitHub Pages 等静态托管在子目录时，相对路径解析错误导致 manifest.json 404 的问题
+      // 1. URL 规范化重定向：确保路径以 / 结尾，防止相对路径解析错误
       (function() {
         var path = window.location.pathname;
-        // 如果路径不是以 / 结尾，且看起来不像是一个具体文件（没有后缀名）
         if (!path.endsWith('/') && !path.includes('.')) {
             var search = window.location.search;
             var hash = window.location.hash;
-            // 立即重定向到带斜杠的 URL
             window.location.replace(path + '/' + search + hash);
         }
       })();
@@ -19,19 +16,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Neon Chronos</title>
     
-    <!-- PWA / iOS Configuration -->
-    <link rel="manifest" href="manifest.json">
+    <!-- 2. 动态注入 Manifest：防止浏览器在重定向发生前请求导致 404 -->
+    <script>
+      (function() {
+        // 只有当路径看起来稳定（有结尾斜杠或指向具体文件）时才注入
+        if (window.location.pathname.endsWith('/') || window.location.pathname.includes('.')) {
+          var link = document.createElement('link');
+          link.rel = 'manifest';
+          link.href = './manifest.json'; // 明确使用相对路径
+          document.head.appendChild(link);
+        }
+      })();
+    </script>
     
     <!-- Standard PWA -->
     <meta name="mobile-web-app-capable" content="yes">
-    <!-- iOS Specific (Required for full screen) -->
+    <!-- iOS Specific -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Chronos">
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233497.png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use specific version to ensure stability -->
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=VT323&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
