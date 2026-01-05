@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, X, Monitor, Type, Calendar, Clock, Activity, Download, Bell, Timer, Trash2, Plus, Play, Pause, RotateCcw, Cloud } from 'lucide-react';
+import { Settings, X, Monitor, Type, Calendar, Clock, Activity, Download, Bell, Timer, Trash2, Plus, Play, Pause, RotateCcw, Cloud, Smartphone, MonitorDown } from 'lucide-react';
 import { AppSettings, ClockMode, ThemeColor, ClockSkin, Alarm, TimerState } from '../types';
 
 interface SettingsPanelProps {
@@ -22,7 +22,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   alarms, onAddAlarm, onToggleAlarm, onDeleteAlarm,
   timer, onTimerAction
 }) => {
-  const [activeTab, setActiveTab] = useState<'VISUAL' | 'ALARM' | 'TIMER'>('VISUAL');
+  const [activeTab, setActiveTab] = useState<'VISUAL' | 'ALARM' | 'TIMER' | 'INSTALL'>('VISUAL');
   const [newAlarmTime, setNewAlarmTime] = useState("08:00");
   const [countdownMinutes, setCountdownMinutes] = useState(5);
 
@@ -70,24 +70,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-zinc-800 shrink-0">
+        <div className="flex border-b border-zinc-800 shrink-0 overflow-x-auto">
           <button 
             onClick={() => setActiveTab('VISUAL')}
-            className={`flex-1 py-4 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors ${activeTab === 'VISUAL' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`flex-1 py-4 px-2 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'VISUAL' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             <Monitor className="w-4 h-4" /> VISUAL
           </button>
           <button 
             onClick={() => setActiveTab('ALARM')}
-            className={`flex-1 py-4 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors ${activeTab === 'ALARM' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`flex-1 py-4 px-2 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'ALARM' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             <Bell className="w-4 h-4" /> ALARMS
           </button>
           <button 
             onClick={() => setActiveTab('TIMER')}
-            className={`flex-1 py-4 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors ${activeTab === 'TIMER' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`flex-1 py-4 px-2 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'TIMER' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             <Timer className="w-4 h-4" /> TIMER
+          </button>
+          <button 
+            onClick={() => setActiveTab('INSTALL')}
+            className={`flex-1 py-4 px-2 font-mono-tech text-sm flex items-center justify-center gap-2 transition-colors whitespace-nowrap ${activeTab === 'INSTALL' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+          >
+            <Download className="w-4 h-4" /> APP
           </button>
         </div>
 
@@ -307,6 +313,41 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 >
                   <RotateCcw className="w-8 h-8" />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* --- INSTALL / APP TAB --- */}
+          {activeTab === 'INSTALL' && (
+            <div className="space-y-6 font-mono-tech">
+              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+                <div className="flex items-center gap-3 mb-2 text-neon-blue">
+                  <MonitorDown className="w-6 h-6" />
+                  <h3 className="font-bold text-lg">DESKTOP INSTALL (EXE-LIKE)</h3>
+                </div>
+                <p className="text-zinc-400 text-sm mb-3">
+                  Install this as a standalone desktop application using Chrome or Edge.
+                </p>
+                <ol className="list-decimal list-inside text-zinc-500 text-sm space-y-1">
+                  <li>Look for the <span className="text-white border border-zinc-700 px-1 rounded">Install icon</span> in your browser address bar (right side).</li>
+                  <li>Click <b>"Install Neon Chronos"</b>.</li>
+                  <li>It will launch in its own window and can be pinned to your taskbar like an .exe!</li>
+                </ol>
+              </div>
+
+              <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+                <div className="flex items-center gap-3 mb-2 text-neon-green">
+                  <Smartphone className="w-6 h-6" />
+                  <h3 className="font-bold text-lg">iPHONE INSTALL</h3>
+                </div>
+                <p className="text-zinc-400 text-sm mb-3">
+                  Add to your home screen for a full-screen app experience.
+                </p>
+                <ol className="list-decimal list-inside text-zinc-500 text-sm space-y-1">
+                  <li>Tap the <span className="text-white">Share Button</span> (Box with arrow up).</li>
+                  <li>Scroll down and tap <span className="text-white">"Add to Home Screen"</span>.</li>
+                  <li>Tap <b>Add</b>. Launch from your home screen!</li>
+                </ol>
               </div>
             </div>
           )}
